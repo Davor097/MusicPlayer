@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="100dp"
+    android:padding="5dp"
+    android:id="@+id/listItemLayout">
+
+    <ImageView
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:id="@+id/listItemAlbumImage"
+        android:src="@mipmap/ic_launcher"
+        android:layout_centerVertical="true"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="List Item Song Name"
+        android:id="@+id/listItemSongName"
+        android:layout_toRightOf="@id/listItemAlbumImage"
+        android:textColor="#000"
+        android:layout_centerVertical="true"
+        android:layout_margin="15dp"
+        android:textSize="15dp"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="List Item Artist Name"
+        android:layout_toRightOf="@id/listItemAlbumImage"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="15dp"
+        android:textSize="10dp"
+        android:id="@+id/listItemArtistName"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="List Item Album Name"
+        android:layout_toRightOf="@+id/listItemAlbumImage"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="65dp"
+        android:textSize="10dp"
+        android:id="@+id/listItemAlbumName"/>
+</RelativeLayout>

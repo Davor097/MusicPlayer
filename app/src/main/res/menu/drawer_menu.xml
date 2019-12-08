@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <item
+        android:id="@+id/playerMenuSelection"
+        android:title="Player"
+        android:icon="@drawable/play"/>
+    <item
+        android:id="@+id/equalizerMenuSelection"
+        android:icon="@drawable/equalizer"
+        android:title="Equalizer"/>
+    <item
+        android:id="@+id/streamMenuSelection"
+        android:icon="@drawable/share"
+        android:title="Connect to stream"/>
+
+</menu>
