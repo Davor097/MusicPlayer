@@ -62,6 +62,7 @@ public class MainActivity extends FragmentActivity implements SongListFragment.C
     public static boolean IS_PREPARED = false;
     public static MediaPlayer mediaPlayer = new MediaPlayer();
     public static int currentSongIndex = 0;
+    public static int streamDuration = 0;
 
     private DrawerLayout drawer;
 
@@ -119,6 +120,7 @@ public class MainActivity extends FragmentActivity implements SongListFragment.C
             case R.id.streamMenuSelection:
                 SONG_LIST.clear();
                 getSongListFromServer();
+                IS_STREAM = true;
 
                 break;
         }
@@ -208,8 +210,7 @@ public class MainActivity extends FragmentActivity implements SongListFragment.C
 
     @Background
     public void getSongListFromServer() {
-        String url = "http://grabovac.subsonic.org/rest/getRandomSongs?u=admin&p=admin&v=1.16.1&c=myapp"; //change this later
-        //final List<Song> songList = new ArrayList<>();
+        String url = "http://grabovac.subsonic.org/rest/getRandomSongs?u=admin&p=admin&v=1.16.1&c=myapp";
 
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder().url(url).build();
@@ -225,7 +226,7 @@ public class MainActivity extends FragmentActivity implements SongListFragment.C
             for (int i = 0; i < nodeList.getLength(); i++) {
                 Song song = new Song();
 
-                String streamPath = "http://192.168.100.9:9797/rest/stream?u=admin&p=admin&v=1.16.1&c=androidapp&estimateContentLength=true&format=mp3&id=";
+                String streamPath = "http://grabovac.subsonic.org/rest/stream?u=admin&p=admin&v=1.16.1&c=androidapp&id=";
                 Node songInfo = nodeList.item(i);
                 streamPath += songInfo.getAttributes().getNamedItem("id").getNodeValue();
                 song.setSongName(songInfo.getAttributes().getNamedItem("title").getNodeValue());
@@ -341,16 +342,20 @@ public class MainActivity extends FragmentActivity implements SongListFragment.C
     }
 
     public static Song getNext() {
-        if (currentSongIndex < SONG_LIST.size()) {
-            return SONG_LIST.get(++currentSongIndex);
+        if (currentSongIndex == SONG_LIST.size()) {
+            currentSongIndex = 0;
+            return SONG_LIST.get(currentSongIndex);
         }
-        return getNextRandom();
+
+        return SONG_LIST.get(++currentSongIndex);
     }
 
     public static Song getPrevious() {
         if (currentSongIndex != 0) {
             return SONG_LIST.get(--currentSongIndex);
+        } else {
+            currentSongIndex = SONG_LIST.size();
+            return SONG_LIST.get(currentSongIndex);
         }
-        return getPreviousRandom();
     }
 }

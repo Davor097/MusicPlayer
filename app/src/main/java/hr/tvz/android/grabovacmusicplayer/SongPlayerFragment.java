@@ -63,7 +63,7 @@ public class SongPlayerFragment extends Fragment {
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (MainActivity.IS_PLAYING) {
+                if (MainActivity.mediaPlayer.isPlaying()) {
                     MainActivity.pause();
                     playButton.setBackgroundResource(R.drawable.play);
                 } else {
@@ -129,7 +129,11 @@ public class SongPlayerFragment extends Fragment {
             }
         });
         MainActivity.startPlaying(song);
-        //duration = MainActivity.mediaPlayer.getDuration();
+        if (!MainActivity.IS_STREAM) {
+            duration = MainActivity.mediaPlayer.getDuration();
+        } else {
+
+        }
         seekBar.setMax(duration);
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
