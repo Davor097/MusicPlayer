@@ -132,7 +132,7 @@ public class SongPlayerFragment extends Fragment {
         if (!MainActivity.IS_STREAM) {
             duration = MainActivity.mediaPlayer.getDuration();
         } else {
-
+            duration = song.getDurationInSeconds() * 100;
         }
         seekBar.setMax(duration);
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {

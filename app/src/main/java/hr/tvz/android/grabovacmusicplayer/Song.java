@@ -21,9 +21,17 @@ public class Song {
     private String albumName;
     private String artistName;
     private String pathToFile;
+    private int durationInSeconds;
     private final OkHttpClient client = new OkHttpClient();
-
     private String albumArtUrl = null;
+
+    public int getDurationInSeconds() {
+        return durationInSeconds;
+    }
+
+    public void setDurationInSeconds(int durationInSeconds) {
+        this.durationInSeconds = durationInSeconds;
+    }
 
     public String getAlbumArtUrl() {
         return albumArtUrl;

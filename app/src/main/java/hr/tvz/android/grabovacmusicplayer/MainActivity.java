@@ -71,7 +71,6 @@ public class MainActivity extends FragmentActivity implements SongListFragment.C
         super.onCreate(savedInstanceState);
         IS_STREAM = false;
         SONG_LIST.addAll(getAllSongs(getApplicationContext()));
-        //getSongListFromServer();
         initAlbumArts();
         setContentView(R.layout.activity_main);
 
@@ -92,10 +91,6 @@ public class MainActivity extends FragmentActivity implements SongListFragment.C
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         SongListFragment listFragment = new SongListFragment();
         transaction.replace(R.id.songListFrame, listFragment).commit();
-        //listFragment.refreshSongs();
-        //listFragment.setActivateOnItemClick(true);
-
-        // ((SongListFragment) getSupportFragmentManager().findFragmentById(R.id.songListFragment)).setActivateOnItemClick(true);
     }
 
     @Override
@@ -232,7 +227,7 @@ public class MainActivity extends FragmentActivity implements SongListFragment.C
                 song.setSongName(songInfo.getAttributes().getNamedItem("title").getNodeValue());
                 song.setArtistName(songInfo.getAttributes().getNamedItem("artist").getNodeValue());
                 song.setAlbumName(songInfo.getAttributes().getNamedItem("album").getNodeValue());
-                // song.initAlbumArt();
+                song.setDurationInSeconds(Integer.parseInt(songInfo.getAttributes().getNamedItem("duration").getNodeValue()));
                 song.setPathToFile(streamPath);
                 Log.d("SUBSONIC SONG DATA", song.getSongName() + ";" + song.getPathToFile());
                 SONG_LIST.add(song);
