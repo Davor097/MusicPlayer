@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
@@ -155,10 +156,15 @@ public class SongPlayerFragment extends Fragment {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                MainActivity.mediaPlayer.seekTo(seekBar.getProgress());
-                timePlaying.setText(createTimeLabel(seekBar.getProgress()));
-                timeRemaining.setText(createTimeLabel(MainActivity.duration - seekBar.getProgress()));
-            }
+                if (MainActivity.IS_STREAM) {
+                    Toast toast = Toast.makeText(getContext(), "Song is not seekable.", Toast.LENGTH_SHORT);
+                    toast.show();
+                } else {
+                    MainActivity.mediaPlayer.seekTo(seekBar.getProgress());
+                    timePlaying.setText(createTimeLabel(seekBar.getProgress()));
+                    timeRemaining.setText(createTimeLabel(MainActivity.duration - seekBar.getProgress()));
+                }
+               }
 
 
 
