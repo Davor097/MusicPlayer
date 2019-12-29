@@ -62,7 +62,7 @@ public class MainActivity extends FragmentActivity implements SongListFragment.C
     public static boolean IS_PREPARED = false;
     public static MediaPlayer mediaPlayer = new MediaPlayer();
     public static int currentSongIndex = 0;
-    public static int streamDuration = 0;
+    public static int duration = 0;
 
     private DrawerLayout drawer;
 
@@ -78,6 +78,7 @@ public class MainActivity extends FragmentActivity implements SongListFragment.C
             @Override
             public void onPrepared(MediaPlayer mp) {
                 mp.seekTo(0);
+                duration = mp.getDuration();
                 mp.start();
                 Log.d("MEDIA PLAYER DEBUG", "Prepared, started playing.");
                 MainActivity.IS_PLAYING = true;
@@ -114,9 +115,8 @@ public class MainActivity extends FragmentActivity implements SongListFragment.C
                 break;
             case R.id.streamMenuSelection:
                 SONG_LIST.clear();
-                getSongListFromServer();
                 IS_STREAM = true;
-
+                getSongListFromServer();
                 break;
         }
         return true;
@@ -144,6 +144,7 @@ public class MainActivity extends FragmentActivity implements SongListFragment.C
         arguments.putString("songAlbumName", song.getAlbumName());
         arguments.putString("songPathToFile", song.getPathToFile());
         arguments.putString("albumArtUrl", song.getAlbumArtUrl());
+        arguments.putString("songDuration", song.getDurationInSeconds());
         SongPlayerFragment fragment = new SongPlayerFragment();
         fragment.setArguments(arguments);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -197,7 +198,6 @@ public class MainActivity extends FragmentActivity implements SongListFragment.C
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            IS_STREAM = true;
             initAlbumArts();
             ((SongListFragment) getSupportFragmentManager().findFragmentById(R.id.songListFrame)).refreshSongs();
         }
@@ -227,7 +227,9 @@ public class MainActivity extends FragmentActivity implements SongListFragment.C
                 song.setSongName(songInfo.getAttributes().getNamedItem("title").getNodeValue());
                 song.setArtistName(songInfo.getAttributes().getNamedItem("artist").getNodeValue());
                 song.setAlbumName(songInfo.getAttributes().getNamedItem("album").getNodeValue());
-                song.setDurationInSeconds(Integer.parseInt(songInfo.getAttributes().getNamedItem("duration").getNodeValue()));
+                String durationOfSong = songInfo.getAttributes().getNamedItem("duration").getNodeValue();
+                Log.d("DURATION_OF_SONG", "length: " + durationOfSong);
+                song.setDurationInSeconds(durationOfSong);
                 song.setPathToFile(streamPath);
                 Log.d("SUBSONIC SONG DATA", song.getSongName() + ";" + song.getPathToFile());
                 SONG_LIST.add(song);
@@ -298,8 +300,8 @@ public class MainActivity extends FragmentActivity implements SongListFragment.C
                 }
             });
             if (IS_STREAM) {
-                mediaPlayer.setAudioAttributes(new
-                        AudioAttributes.Builder().setLegacyStreamType(AudioManager.STREAM_MUSIC).build());
+                //mediaPlayer.setAudioAttributes(new
+                  //      AudioAttributes.Builder().setLegacyStreamType(AudioManager.STREAM_MUSIC).build());
                 mediaPlayer.setDataSource(song.getPathToFile());
                 mediaPlayer.prepareAsync();
             } else {
@@ -319,7 +321,7 @@ public class MainActivity extends FragmentActivity implements SongListFragment.C
     }
 
     public static void pause() {
-        if (MainActivity.IS_PLAYING) {
+        if (mediaPlayer.isPlaying()) {
             mediaPlayer.pause();
             MainActivity.IS_PLAYING = false;
         }

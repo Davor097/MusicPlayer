@@ -22,7 +22,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class SongPlayerFragment extends Fragment {
     private Song song;
     private Handler handler = new Handler();
-    private int duration;
+    //private int duration;
 
 
     public SongPlayerFragment() {}
@@ -37,6 +37,7 @@ public class SongPlayerFragment extends Fragment {
         song.setAlbumName(getArguments().getString("songAlbumName"));
         song.setPathToFile(getArguments().getString("songPathToFile"));
         song.setAlbumArtUrl(getArguments().getString("albumArtUrl"));
+        song.setDurationInSeconds(getArguments().getString("songDuration"));
     }
 
     @Override
@@ -84,6 +85,7 @@ public class SongPlayerFragment extends Fragment {
                 arguments.putString("songAlbumName", song.getAlbumName());
                 arguments.putString("songPathToFile", song.getPathToFile());
                 arguments.putString("albumArtUrl", song.getAlbumArtUrl());
+                arguments.putString("songDuration", song.getDurationInSeconds());
                 SongPlayerFragment fragment = new SongPlayerFragment();
                 fragment.setArguments(arguments);
                 FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
@@ -103,6 +105,7 @@ public class SongPlayerFragment extends Fragment {
                 arguments.putString("songAlbumName", song.getAlbumName());
                 arguments.putString("songPathToFile", song.getPathToFile());
                 arguments.putString("albumArtUrl", song.getAlbumArtUrl());
+                arguments.putString("songDuration", song.getDurationInSeconds());
                 SongPlayerFragment fragment = new SongPlayerFragment();
                 fragment.setArguments(arguments);
                 FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
@@ -121,6 +124,7 @@ public class SongPlayerFragment extends Fragment {
                 arguments.putString("songAlbumName", song.getAlbumName());
                 arguments.putString("songPathToFile", song.getPathToFile());
                 arguments.putString("albumArtUrl", song.getAlbumArtUrl());
+                arguments.putString("songDuration", song.getDurationInSeconds());
                 SongPlayerFragment fragment = new SongPlayerFragment();
                 fragment.setArguments(arguments);
                 FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
@@ -128,13 +132,14 @@ public class SongPlayerFragment extends Fragment {
                 transaction.replace(R.id.playerFrame, fragment).commit();
             }
         });
+
         MainActivity.startPlaying(song);
-        if (!MainActivity.IS_STREAM) {
-            duration = MainActivity.mediaPlayer.getDuration();
+        if (MainActivity.IS_STREAM) {
+            MainActivity.duration = Integer.parseInt(song.getDurationInSeconds()) * 1000;
         } else {
-            duration = song.getDurationInSeconds() * 100;
+            MainActivity.duration = MainActivity.mediaPlayer.getDuration();
         }
-        seekBar.setMax(duration);
+        seekBar.setMax(MainActivity.duration);
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -152,7 +157,7 @@ public class SongPlayerFragment extends Fragment {
             public void onStopTrackingTouch(SeekBar seekBar) {
                 MainActivity.mediaPlayer.seekTo(seekBar.getProgress());
                 timePlaying.setText(createTimeLabel(seekBar.getProgress()));
-                timeRemaining.setText(createTimeLabel(duration - seekBar.getProgress()));
+                timeRemaining.setText(createTimeLabel(MainActivity.duration - seekBar.getProgress()));
             }
 
 
@@ -167,9 +172,9 @@ public class SongPlayerFragment extends Fragment {
                     seekBar.setProgress(currentPosition);
 
                     timePlaying.setText(createTimeLabel(seekBar.getProgress()));
-                    timeRemaining.setText(createTimeLabel(duration - seekBar.getProgress()));
+                    timeRemaining.setText(createTimeLabel(MainActivity.duration - seekBar.getProgress()));
 
-                    if (duration - currentPosition <= 0) {
+                    if (MainActivity.duration - currentPosition <= 0) {
                         try {
                             //nextButton.performClick();
                         } catch (Exception e) {
