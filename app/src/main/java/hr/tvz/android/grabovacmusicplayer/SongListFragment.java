@@ -67,8 +67,11 @@ public class SongListFragment extends ListFragment {
     }
 
     public void refreshSongs() {
+        la.setAllSongList(MainActivity.SONG_LIST);
         la.notifyDataSetChanged();
     }
 
-
+    public void filterResults(CharSequence constraint) {
+        la.getFilter().filter(constraint);
+    }
 }

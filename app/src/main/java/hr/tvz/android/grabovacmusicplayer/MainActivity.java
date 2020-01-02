@@ -15,6 +15,7 @@ import android.os.Message;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -24,9 +25,12 @@ import android.support.v4.util.TimeUtils;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -74,6 +78,10 @@ public class MainActivity extends FragmentActivity implements SongListFragment.C
         initAlbumArts();
         setContentView(R.layout.activity_main);
 
+        TextInputEditText songFilterText = findViewById(R.id.songTextInputFilter);
+
+
+
         mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mp) {
@@ -92,6 +100,24 @@ public class MainActivity extends FragmentActivity implements SongListFragment.C
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         SongListFragment listFragment = new SongListFragment();
         transaction.replace(R.id.songListFrame, listFragment).commit();
+
+        songFilterText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                SongListFragment fragment = (SongListFragment) getSupportFragmentManager().findFragmentById(R.id.songListFrame);
+                fragment.filterResults(s);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
     }
 
     @Override
