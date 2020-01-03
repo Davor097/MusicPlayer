@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.media.audiofx.Equalizer;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
@@ -65,6 +66,7 @@ public class MainActivity extends FragmentActivity implements SongListFragment.C
     public static boolean IS_STREAM = false;
     public static boolean IS_PREPARED = false;
     public static MediaPlayer mediaPlayer = new MediaPlayer();
+    public static Equalizer mainEQ = new Equalizer(0, mediaPlayer.getAudioSessionId());
     public static int currentSongIndex = 0;
     public static int duration = 0;
 
@@ -80,8 +82,6 @@ public class MainActivity extends FragmentActivity implements SongListFragment.C
 
         TextInputEditText songFilterText = findViewById(R.id.songTextInputFilter);
 
-
-
         mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mp) {
@@ -92,6 +92,9 @@ public class MainActivity extends FragmentActivity implements SongListFragment.C
                 MainActivity.IS_PLAYING = true;
             }
         });
+
+        mainEQ.setEnabled(true);
+
 
         drawer = findViewById(R.id.drawerLayout);
         NavigationView navigationView = findViewById(R.id.navView);
@@ -123,7 +126,6 @@ public class MainActivity extends FragmentActivity implements SongListFragment.C
     @Override
     protected void onStart() {
         super.onStart();
-        //((SongListFragment) getSupportFragmentManager().findFragmentById(R.id.songListFrame)).refreshSongs();
     }
 
     @Override
@@ -269,47 +271,17 @@ public class MainActivity extends FragmentActivity implements SongListFragment.C
         } catch (Exception e) {
             e.printStackTrace();
         }
-        /*
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                e.printStackTrace();
-            }
-
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                ResponseBody responseBody = response.body();
-                try {
-                    DocumentBuilderFactory dbc = DocumentBuilderFactory.newInstance();
-                    DocumentBuilder documentBuilder = dbc.newDocumentBuilder();
-                    Document document = documentBuilder.parse(responseBody.byteStream());
-                    NodeList nodeList = document.getElementsByTagName("song");
-
-                    for (int i = 0; i < nodeList.getLength(); i++) {
-                        Song song = new Song();
-                        String streamPath = "http://grabovac.subsonic.org/rest/stream?u=admin&p=admin&v=1.16.1&c=myapp&id=";
-                        Node songInfo = nodeList.item(i);
-                        streamPath += songInfo.getAttributes().getNamedItem("id").getNodeValue();
-                        song.setSongName(songInfo.getAttributes().getNamedItem("title").getNodeValue());
-                        song.setArtistName(songInfo.getAttributes().getNamedItem("artist").getNodeValue());
-                        song.setAlbumName(songInfo.getAttributes().getNamedItem("album").getNodeValue());
-                       // song.initAlbumArt();
-                        song.setPathToFile(streamPath);
-                        Log.d("SUBSONIC SONG DATA", song.getSongName() + ";" + song.getPathToFile());
-                        SONG_LIST.add(song);
-                        Log.d("SONG_LIST AFTER ADDING", SONG_LIST.get(i).getSongName());
-                    }
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });*/
     }
 
     public static void releasePlayer() {
         mediaPlayer.release();
         mediaPlayer = new MediaPlayer();
+        Equalizer.Settings prevSettings = mainEQ.getProperties();
+        mainEQ.release();
+        mainEQ = new Equalizer(0, mediaPlayer.getAudioSessionId());
+        Log.d("SESSION ID", "audio session id: " + mediaPlayer.getAudioSessionId());
+        mainEQ.setProperties(prevSettings);
+        mainEQ.setEnabled(true);
         MainActivity.IS_PREPARED = false;
         MainActivity.IS_PLAYING = false;
     }
@@ -320,14 +292,11 @@ public class MainActivity extends FragmentActivity implements SongListFragment.C
             mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
-                    //mp.seekTo(0);
                     mp.start();
                     MainActivity.IS_PREPARED = true;
                 }
             });
             if (IS_STREAM) {
-                //mediaPlayer.setAudioAttributes(new
-                  //      AudioAttributes.Builder().setLegacyStreamType(AudioManager.STREAM_MUSIC).build());
                 mediaPlayer.setDataSource(song.getPathToFile());
                 mediaPlayer.prepareAsync();
             } else {

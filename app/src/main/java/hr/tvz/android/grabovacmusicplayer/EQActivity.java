@@ -13,7 +13,7 @@ import com.sdsmdg.harjot.crollerTest.Croller;
 import com.sdsmdg.harjot.crollerTest.OnCrollerChangeListener;
 
 public class EQActivity extends Activity {
-    public Equalizer equalizer = new Equalizer(0, MainActivity.mediaPlayer.getAudioSessionId());
+    //public static Equalizer equalizer = MainActivity.mainEQ;
 
     private SeekBar low;
     private SeekBar lowMid;
@@ -44,22 +44,7 @@ public class EQActivity extends Activity {
         high = findViewById(R.id.highEQ);
         volumeKnob = findViewById(R.id.volumeKnob);
 
-        equalizer.setEnabled(true);
-
-        int numOfBands = equalizer.getNumberOfBands();
-        Log.d("EQ:", "number of bands: " + numOfBands);
-        int[] band0 = equalizer.getBandFreqRange((short)0);
-        int[] band1 = equalizer.getBandFreqRange((short)1);
-        int[] band2 = equalizer.getBandFreqRange((short)2);
-        int[] band3 = equalizer.getBandFreqRange((short)3);
-        int[] band4 = equalizer.getBandFreqRange((short)4);
-        Log.d("EQ", "band 0: " + (short) band0[0] + " - " +(short) band0[1]);
-        Log.d("EQ", "band 1: " +(short) band1[0] + " - " + (short)band1[1]);
-        Log.d("EQ", "band 2: " +(short) band2[0] + " - " +(short) band2[1]);
-        Log.d("EQ", "band 3: " +(short) band3[0] + " - " +(short) band3[1]);
-        Log.d("EQ", "band 4: " + (short)band4[0] + " - " + (short)band4[1]);
-
-        short[] bandLevelRange = equalizer.getBandLevelRange();
+        short[] bandLevelRange = MainActivity.mainEQ.getBandLevelRange();
         low.setMin(bandLevelRange[0]);
         low.setMax(bandLevelRange[1]);
         low.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -67,7 +52,7 @@ public class EQActivity extends Activity {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (fromUser) {
                     seekBar.setProgress(progress);
-                    equalizer.setBandLevel(LOW_BAND, (short) (progress));
+                    MainActivity.mainEQ.setBandLevel(LOW_BAND, (short) (progress));
                 }
             }
 
@@ -78,8 +63,7 @@ public class EQActivity extends Activity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                Log.d("EQ LOW SEEK PROGRESS",  " " + seekBar.getProgress());
-                Log.d("EQ LOW LEVEL", " " + equalizer.getBandLevel(LOW_BAND));
+
             }
         });
 
@@ -90,7 +74,7 @@ public class EQActivity extends Activity {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (fromUser) {
                     seekBar.setProgress(progress);
-                    equalizer.setBandLevel(LOW_MID_BAND, (short) (progress));
+                    MainActivity.mainEQ.setBandLevel(LOW_MID_BAND, (short) (progress));
                 }
             }
 
@@ -101,8 +85,7 @@ public class EQActivity extends Activity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                Log.d("EQ LOW MID SEEK PROGRESS",  " " + seekBar.getProgress());
-                Log.d("EQ LOW MID LEVEL", " " + equalizer.getBandLevel(LOW_MID_BAND));
+
             }
         });
 
@@ -113,7 +96,7 @@ public class EQActivity extends Activity {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (fromUser) {
                     seekBar.setProgress(progress);
-                    equalizer.setBandLevel(MID_BAND, (short) (progress));
+                    MainActivity.mainEQ.setBandLevel(MID_BAND, (short) (progress));
                 }
             }
 
@@ -124,8 +107,7 @@ public class EQActivity extends Activity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                Log.d("EQ MID SEEK PROGRESS",  " " + seekBar.getProgress());
-                Log.d("EQ MID LEVEL", " " + equalizer.getBandLevel(MID_BAND));
+
             }
         });
 
@@ -136,7 +118,7 @@ public class EQActivity extends Activity {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (fromUser) {
                     seekBar.setProgress(progress);
-                    equalizer.setBandLevel(HIGH_MID_BAND, (short) (progress));
+                    MainActivity.mainEQ.setBandLevel(HIGH_MID_BAND, (short) (progress));
                 }
             }
 
@@ -147,8 +129,7 @@ public class EQActivity extends Activity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                Log.d("EQ HIGH MID SEEK PROGRESS",  " " + seekBar.getProgress());
-                Log.d("EQ HIGH MID LEVEL", " " + equalizer.getBandLevel(HIGH_MID_BAND));
+
             }
         });
 
@@ -159,7 +140,7 @@ public class EQActivity extends Activity {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (fromUser) {
                     seekBar.setProgress(progress);
-                    equalizer.setBandLevel(HIGH_BAND, (short) (progress));
+                    MainActivity.mainEQ.setBandLevel(HIGH_BAND, (short) (progress));
                 }
             }
 
@@ -170,11 +151,16 @@ public class EQActivity extends Activity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                Log.d("EQ HIGH SEEK PROGRESS",  " " + seekBar.getProgress());
-                Log.d("EQ HIGH LEVEL", " " + equalizer.getBandLevel(HIGH_BAND));
 
             }
         });
+
+        low.setProgress(MainActivity.mainEQ.getBandLevel(LOW_BAND));
+        lowMid.setProgress(MainActivity.mainEQ.getBandLevel(LOW_MID_BAND));
+        mid.setProgress(MainActivity.mainEQ.getBandLevel(MID_BAND));
+        highMid.setProgress(MainActivity.mainEQ.getBandLevel(HIGH_MID_BAND));
+        high.setProgress(MainActivity.mainEQ.getBandLevel(HIGH_BAND));
+
         int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
         volumeKnob.setMax(maxVolume);
         int currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
@@ -197,7 +183,5 @@ public class EQActivity extends Activity {
 
             }
         });
-
-
     }
 }
