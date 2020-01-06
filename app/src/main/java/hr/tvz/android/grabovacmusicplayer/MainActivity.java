@@ -2,7 +2,10 @@ package hr.tvz.android.grabovacmusicplayer;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -27,6 +30,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.MenuItem;
@@ -179,6 +183,86 @@ public class MainActivity extends FragmentActivity implements SongListFragment.C
         FrameLayout frameLayout = findViewById(R.id.playerFrame);
         frameLayout.setLayoutParams(new LinearLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, 0, 3));
         transaction.replace(R.id.playerFrame, fragment).commit();
+    }
+
+    @Override
+    public void onItemLongClick(Song song) {
+        List<Playlist> playlists = getPlaylists();
+        final List<String> playlistsNames = new ArrayList<>();
+        for (Playlist playlist : playlists) {
+            playlistsNames.add(playlist.getName());
+        }
+        playlistsNames.add("--- Create new playlist ---");
+        String[] options = playlistsNames.toArray(new String[0]);
+
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        dialogBuilder.setTitle("Add to playlist");
+        dialogBuilder.setItems(options, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (which == (playlistsNames.size() - 1)) {
+                    AlertDialog.Builder newDialogBuilder = new AlertDialog.Builder(getApplicationContext());
+                    final EditText newPlaylistInput = new EditText(getApplicationContext());
+                    newPlaylistInput.setInputType(InputType.TYPE_CLASS_TEXT);
+                    newDialogBuilder.setView(newPlaylistInput);
+                    newDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            createPlaylist(newPlaylistInput.getText().toString());
+                        }
+                    });
+                    newDialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+                    Log.d("PLAYLIST DIALOG", "Creating new playlist");
+                } else {
+                    //add song to playlist
+                    Log.d("PLAYLIST DIALOG", "Adding song to playlist");
+                }
+            }
+        });
+    }
+
+    public void createPlaylist(String name){
+        Uri playlists = MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI;
+        Cursor c = getContentResolver().query(playlists, new String[] {"*"}, null, null, null);
+        c.moveToFirst();
+
+        do {
+            String plName = c.getString(c.getColumnIndex(MediaStore.Audio.Playlists.NAME));
+            if (plName.equalsIgnoreCase(name)) {
+                Toast.makeText(this, "Playlist with that name already exists.", Toast.LENGTH_SHORT);
+                return;
+            }
+        } while (c.moveToNext());
+        c.close();
+
+        ContentValues newPlaylistValues = new ContentValues();
+        newPlaylistValues.put(MediaStore.Audio.Playlists.NAME, name);
+        newPlaylistValues.put(MediaStore.Audio.Playlists.DATE_MODIFIED, System.currentTimeMillis());
+        Uri newPlaylist = getContentResolver().insert(playlists, newPlaylistValues);
+        Log.d("PLAYLIST OPERATION", "Playlist added: " + newPlaylist);
+    }
+
+    public List<Playlist> getPlaylists() {
+        List<Playlist> listOfPlaylists = new ArrayList<>();
+        Uri playlists = MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI;
+        Cursor c = getContentResolver().query(playlists, new String[] {"*"}, null, null, null);
+        c.moveToFirst();
+
+        do {
+            String plName = c.getString(c.getColumnIndex(MediaStore.Audio.Playlists.NAME));
+            String id = c.getString(c.getColumnIndex(MediaStore.Audio.Playlists._ID));
+            Playlist temp = new Playlist();
+            temp.setName(plName);
+            temp.setId(id);
+            listOfPlaylists.add(temp);
+        } while(c.moveToNext());
+
+        return listOfPlaylists;
     }
 
     public static void initAlbumArts() {

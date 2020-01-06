@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.ListFragment;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
@@ -18,13 +19,21 @@ public class SongListFragment extends ListFragment {
     private SongItemArrayAdapter la;
     interface Callbacks {
         void onItemSelected(Song song);
+        void onItemLongClick(Song song);
     }
     private static Callbacks callbacks = new Callbacks() {
         @Override
         public void onItemSelected(Song song) {
 
         }
+
+        @Override
+        public void onItemLongClick(Song song) {
+
+        }
     };
+
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -32,20 +41,25 @@ public class SongListFragment extends ListFragment {
         songList = MainActivity.SONG_LIST;
         la = new SongItemArrayAdapter(getActivity(), R.layout.list_item_layout, songList);
         setListAdapter(la);
+
+        getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                callbacks.onItemLongClick(songList.get(position));
+                return true;
+            }
+        });
     }
 
     @Override
     public void onStart() {
         super.onStart();
-
-        //refreshSongs();
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setActivateOnItemClick(true);
-        //refreshSongs();
     }
 
     @Override
