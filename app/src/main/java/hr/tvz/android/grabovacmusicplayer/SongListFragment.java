@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ListFragment;
 import android.view.View;
 import android.widget.AdapterView;
@@ -34,13 +35,9 @@ public class SongListFragment extends ListFragment {
     };
 
 
-
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        songList = MainActivity.SONG_LIST;
-        la = new SongItemArrayAdapter(getActivity(), R.layout.list_item_layout, songList);
-        setListAdapter(la);
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
         getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
@@ -49,6 +46,16 @@ public class SongListFragment extends ListFragment {
                 return true;
             }
         });
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        songList = MainActivity.SONG_LIST;
+        la = new SongItemArrayAdapter(getActivity(), R.layout.list_item_layout, songList);
+        setListAdapter(la);
+
+
     }
 
     @Override

@@ -224,6 +224,7 @@ public class MainActivity extends FragmentActivity implements SongListFragment.C
                 }
             }
         });
+        dialogBuilder.show();
     }
 
     public void createPlaylist(String name){
@@ -251,16 +252,16 @@ public class MainActivity extends FragmentActivity implements SongListFragment.C
         List<Playlist> listOfPlaylists = new ArrayList<>();
         Uri playlists = MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI;
         Cursor c = getContentResolver().query(playlists, new String[] {"*"}, null, null, null);
-        c.moveToFirst();
 
-        do {
+
+        while(c.moveToNext()) {
             String plName = c.getString(c.getColumnIndex(MediaStore.Audio.Playlists.NAME));
             String id = c.getString(c.getColumnIndex(MediaStore.Audio.Playlists._ID));
             Playlist temp = new Playlist();
             temp.setName(plName);
             temp.setId(id);
             listOfPlaylists.add(temp);
-        } while(c.moveToNext());
+        }
 
         return listOfPlaylists;
     }
