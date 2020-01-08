@@ -1,7 +1,5 @@
 package hr.tvz.android.grabovacmusicplayer;
 
-import android.Manifest;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -10,8 +8,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.media.AudioAttributes;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.audiofx.Equalizer;
 import android.net.Uri;
@@ -21,21 +17,14 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TextInputEditText;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.util.TimeUtils;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
-import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -43,13 +32,10 @@ import android.widget.Toast;
 
 import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.EActivity;
-import org.jetbrains.annotations.NotNull;
-import org.json.JSONObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -57,8 +43,6 @@ import java.util.concurrent.ThreadLocalRandom;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import okhttp3.Call;
-import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -242,11 +226,51 @@ public class MainActivity extends FragmentActivity implements SongListFragment.C
     }
 
     public void openLoadPlaylistDialog() {
+        final List<Playlist> playlists = getPlaylists();
+        if (playlists.isEmpty()) {
+            Toast.makeText(this, "Create a playlist first.", Toast.LENGTH_SHORT);
+        } else {
+            final List<String> playlistsNames = new ArrayList<>();
+            for (Playlist playlist : playlists) {
+                playlistsNames.add(playlist.getName());
+            }
+            String[] options = playlistsNames.toArray(new String[0]);
+
+            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+            dialogBuilder.setTitle("Select a playlist");
+            dialogBuilder.setItems(options, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Playlist playlist = playlists.get(which);
+                    loadFromPlaylist(playlist);
+                    Log.d("PLAYLIST LOADED", "Playlist: " + playlist.getName());
+                }
+            });
+            dialogBuilder.show();
+        }
 
     }
 
     public void loadFromPlaylist(Playlist playlist) {
+        List<Song> songs;
+        Uri uri = MediaStore.Audio.Playlists.Members.getContentUri("external", Long.parseLong(playlist.getId()));
+        String[] projection = {
+                MediaStore.Audio.AudioColumns.DATA,
+                MediaStore.Audio.AudioColumns.TITLE,
+                MediaStore.Audio.AudioColumns.ALBUM,
+                MediaStore.Audio.ArtistColumns.ARTIST,
+                MediaStore.Audio.AudioColumns._ID
+        };
+        String selection = MediaStore.Audio.Media.IS_MUSIC + "!= 0";
+        String sort = MediaStore.Audio.Media.TITLE + " ASC";
 
+        songs = getSongListFromQuery(uri, projection, selection, sort, getApplicationContext());
+
+        SONG_LIST.clear();
+        SONG_LIST.addAll(songs);
+        initAlbumArts();
+
+        ((SongListFragment)getSupportFragmentManager().findFragmentById(R.id.songListFrame)).refreshSongs();
     }
 
     public void addSongToPlaylist(Playlist playlist, Song song) {
