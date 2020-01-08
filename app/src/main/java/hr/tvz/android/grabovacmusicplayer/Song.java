@@ -17,6 +17,7 @@ import okhttp3.ResponseBody;
 
 public class Song {
     public static final String API_KEY = "81bc9b1e9674844a4ae0bb22fd77380e";
+    private String id;
     private String songName;
     private String albumName;
     private String artistName;
@@ -31,6 +32,14 @@ public class Song {
 
     public void setDurationInSeconds(String durationInSeconds) {
         this.durationInSeconds = durationInSeconds;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getAlbumArtUrl() {

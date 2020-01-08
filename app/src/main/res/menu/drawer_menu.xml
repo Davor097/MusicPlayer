@@ -15,5 +15,13 @@
         android:id="@+id/streamMenuSelection"
         android:icon="@drawable/share"
         android:title="Connect to stream"/>
+    <group>
+        <item android:id="@+id/createPlaylistSelection"
+            android:icon="@drawable/list"
+            android:title="Create a playlist"/>
+        <item android:id="@+id/loadPlaylistSelection"
+            android:icon="@drawable/eject"
+            android:title="Load a playlist"/>
+    </group>
 
 </menu>
