@@ -17,6 +17,7 @@ import okhttp3.ResponseBody;
 
 public class Song {
     public static final String API_KEY = "81bc9b1e9674844a4ae0bb22fd77380e";
+    public static final String ALBUM_ART_LINK = "http://ws.audioscrobbler.com/2.0/?method=album.getinfo&";
     private String id;
     private String songName;
     private String albumName;
@@ -106,7 +107,7 @@ public class Song {
             || this.artistName == null || this.artistName.equals("")) {
             return;
         }
-        String url = "http://ws.audioscrobbler.com/2.0/?method=album.getinfo&" +
+        String url = ALBUM_ART_LINK +
                 "api_key=" + Song.API_KEY +
                 "&artist=" + this.artistName +
                 "&album=" + this.albumName +
@@ -121,7 +122,7 @@ public class Song {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 ResponseBody responseBody = response.body();
-                JSONObject jsonObject = null;
+                JSONObject jsonObject;
                 try {
                     jsonObject = new JSONObject(responseBody.string());
                     String albumArtUrl = jsonObject.getJSONObject("album").getJSONArray("image").getJSONObject(2).getString("#text");

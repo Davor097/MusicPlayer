@@ -7,11 +7,6 @@ public class Playlist {
     private List<Song> songList;
     private String name;
 
-    public Playlist(List<Song> songList, String name) {
-        this.songList = songList;
-        this.name = name;
-    }
-
     public Playlist() {
 
     }
@@ -40,7 +35,4 @@ public class Playlist {
         this.name = name;
     }
 
-    public void initSongs(){
-
-    }
 }

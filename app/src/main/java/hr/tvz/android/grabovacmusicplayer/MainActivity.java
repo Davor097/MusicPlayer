@@ -58,6 +58,8 @@ public class MainActivity extends FragmentActivity implements SongListFragment.C
     public static Equalizer mainEQ = new Equalizer(0, mediaPlayer.getAudioSessionId());
     public static int currentSongIndex = 0;
     public static int duration = 0;
+    public static String STREAM_INFO_URL = "http://grabovac.subsonic.org/rest/getRandomSongs?u=admin&p=admin&v=1.16.1&c=myapp";
+    public static String STREAM_PLAY_URL = "http://grabovac.subsonic.org/rest/stream?u=admin&p=admin&v=1.16.1&c=androidapp&id=";
 
     private DrawerLayout drawer;
 
@@ -124,22 +126,28 @@ public class MainActivity extends FragmentActivity implements SongListFragment.C
                 SONG_LIST.clear();
                 IS_STREAM = false;
                 SONG_LIST.addAll(getAllSongs(getApplicationContext()));
+                initAlbumArts();
                 ((SongListFragment) getSupportFragmentManager().findFragmentById(R.id.songListFrame)).refreshSongs();
+                drawer.closeDrawers();
                 break;
             case R.id.equalizerMenuSelection:
                 Intent eqIntent = new Intent(getApplicationContext(), EQActivity.class);
                 startActivity(eqIntent);
+                drawer.closeDrawers();
                 break;
             case R.id.streamMenuSelection:
                 SONG_LIST.clear();
                 IS_STREAM = true;
                 getSongListFromServer();
+                drawer.closeDrawers();
                 break;
             case R.id.createPlaylistSelection:
                 openCreatePlaylistDialog();
+                drawer.closeDrawers();
                 break;
             case R.id.loadPlaylistSelection:
                 openLoadPlaylistDialog();
+                drawer.closeDrawers();
                 break;
         }
         return true;
@@ -386,7 +394,7 @@ public class MainActivity extends FragmentActivity implements SongListFragment.C
 
     @Background
     public void getSongListFromServer() {
-        String url = "http://grabovac.subsonic.org/rest/getRandomSongs?u=admin&p=admin&v=1.16.1&c=myapp";
+        String url = STREAM_INFO_URL;
 
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder().url(url).build();
@@ -402,7 +410,7 @@ public class MainActivity extends FragmentActivity implements SongListFragment.C
             for (int i = 0; i < nodeList.getLength(); i++) {
                 Song song = new Song();
 
-                String streamPath = "http://grabovac.subsonic.org/rest/stream?u=admin&p=admin&v=1.16.1&c=androidapp&id=";
+                String streamPath = STREAM_PLAY_URL;
                 Node songInfo = nodeList.item(i);
                 streamPath += songInfo.getAttributes().getNamedItem("id").getNodeValue();
                 song.setSongName(songInfo.getAttributes().getNamedItem("title").getNodeValue());

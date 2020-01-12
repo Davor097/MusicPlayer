@@ -2,18 +2,14 @@ package hr.tvz.android.grabovacmusicplayer;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.media.AudioManager;
-import android.media.audiofx.Equalizer;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.SeekBar;
 
 import com.sdsmdg.harjot.crollerTest.Croller;
 import com.sdsmdg.harjot.crollerTest.OnCrollerChangeListener;
 
 public class EQActivity extends Activity {
-    //public static Equalizer equalizer = MainActivity.mainEQ;
 
     private SeekBar low;
     private SeekBar lowMid;

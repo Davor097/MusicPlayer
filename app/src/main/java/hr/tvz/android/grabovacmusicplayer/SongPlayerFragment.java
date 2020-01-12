@@ -1,13 +1,9 @@
 package hr.tvz.android.grabovacmusicplayer;
 
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
-import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +19,6 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class SongPlayerFragment extends Fragment {
     private Song song;
     private Handler handler = new Handler();
-    //private int duration;
 
 
     public SongPlayerFragment() {}
@@ -196,7 +191,7 @@ public class SongPlayerFragment extends Fragment {
     }
 
     public String createTimeLabel(int time) {
-        String timeLabel = "";
+        String timeLabel;
         int min = time / 1000 / 60;
         int sec = time / 1000 % 60;
 
